@@ -4,7 +4,7 @@ pipeline {
     maven 'maven3'
   }
   environment {
-    SONAR_IP = '172.31.21.44'
+    SONAR_IP = '172.31.37.14'
   }
   stages {
     stage('Trivy FS Scan') {
