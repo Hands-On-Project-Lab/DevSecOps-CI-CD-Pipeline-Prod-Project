@@ -78,9 +78,9 @@ pipeline {
                   kubectl apply -f deploy-svc.yaml -n devsecops-project
 
                   # Rollout status check with automated rollback
-                  kubectl rollout status deployment/devsecops-demo -n devsecops-project --timeout=60s || {
+                  kubectl rollout status deployment/devsecops-ci-cd-pipeline-prod-project -n devsecops-project --timeout=60s || {
                     echo "Deployment failed! Initiating rollback..."
-                    kubectl rollout undo deployment/devsecops-demo -n devsecops-project
+                    kubectl rollout undo deployment/devsecops-ci-cd-pipeline-prod-project -n devsecops-project
                     exit 1
                   }
               '''
