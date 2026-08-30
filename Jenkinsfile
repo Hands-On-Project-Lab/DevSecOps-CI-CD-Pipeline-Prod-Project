@@ -44,7 +44,7 @@ pipeline {
         steps {
             sh '''
                 mkdir -p ${TRIVY_CACHE_DIR} ${TMPDIR}
-                trivy image -exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$BUILD_NUMBER"
+                trivy image --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$BUILD_NUMBER"
             '''
         }
       }
