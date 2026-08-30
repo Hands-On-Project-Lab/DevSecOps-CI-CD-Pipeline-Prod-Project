@@ -36,9 +36,17 @@ pipeline {
       }
     }
     stage('Trivy Image Scan') {
-      steps {
-        sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$BUILD_NUMBER"'
+        environment {
+            // ${WORKSPACE} is always writable by the current Jenkins build agent
+            TRIVY_CACHE_DIR = "${WORKSPACE}/.trivycache"
+            TMPDIR          = "${WORKSPACE}/.tmp"
+        }
+        steps {
+            sh '''
+                mkdir -p ${TRIVY_CACHE_DIR} ${TMPDIR}
+                trivy image -exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$BUILD_NUMBER"
+            '''
+        }
       }
     }
   }
-}
