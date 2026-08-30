@@ -69,7 +69,7 @@ pipeline {
                   # Update kubeconfig
                   aws eks update-kubeconfig \
                     --region ap-south-1 \
-                    --name devsecops-ci-cd-pipeline-prod-project
+                    --name devsecops-ci-cd-pipeline-prod-project-eks
 
                   # Create namespace if it does not exist
                   kubectl create namespace devsecops-project --dry-run=client -o yaml | kubectl apply -f -
