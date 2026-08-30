@@ -46,6 +46,13 @@ pipeline {
                 mkdir -p ${TRIVY_CACHE_DIR} ${TMPDIR}
                 trivy image --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$BUILD_NUMBER"
             '''
+       
+        }
+      }
+      stage('Push Image to ECR') {
+        steps {
+          sh 'docker push "$IMAGE_REPO:$BUILD_NUMBER"'
+          sh 'docker push "$IMAGE_REPO:latest"'
         }
       }
     }
