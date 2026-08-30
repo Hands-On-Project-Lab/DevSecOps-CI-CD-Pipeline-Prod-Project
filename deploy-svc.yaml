@@ -1,0 +1,52 @@
+# file: k8s/devsecops-ci-cd-pipeline-prod-project-deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devsecops-ci-cd-pipeline-prod-project
+  namespace: devsecops-project
+  labels:
+    app: devsecops-ci-cd-pipeline-prod-project
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: devsecops-ci-cd-pipeline-prod-project
+  template:
+    metadata:
+      labels:
+        app: devsecops-ci-cd-pipeline-prod-project
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: devsecops-ci-cd-pipeline-prod-project
+      containers:
+        - name: devsecops-ci-cd-pipeline-prod-project
+          image: 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:latest
+          ports:
+            - containerPort: 8080
+
+            
+---
+
+# file: k8s/devsecops-ci-cd-pipeline-prod-project-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: devsecops-ci-cd-pipeline-prod-project-svc
+  namespace: devsecops-project
+  labels:
+    app: devsecops-ci-cd-pipeline-prod-project
+spec:
+  type: NodePort
+  selector:
+    app: devsecops-ci-cd-pipeline-prod-project
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      nodePort: 31000
+
