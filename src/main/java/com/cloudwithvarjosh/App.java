@@ -54,6 +54,6 @@ public class App {
 
     // simple helper method for tests
     public static String brandHtml() {
-        return "<h1>Cloud With VarJosh</h1><p>Simple DevSecOps Demo App</p>";
+        return "<h1>Hi! Kumar Aryan,</h1><p>Your DevSecOps CI CD Pipeline Prod application has been tested and deployed successfully with Trivy, sonarqube, maven, docker, sonarqube, ecr, eks!</p>";
     }
 }
