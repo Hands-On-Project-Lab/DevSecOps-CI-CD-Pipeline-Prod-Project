@@ -1,0 +1,442 @@
+Started by user Kumar Aryan
+Obtained Jenkinsfile from git https://github.com/Hands-On-Project-Lab/DevSecOps-CI-CD-Pipeline-Prod-Project.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins-Agent in /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential Jenkins-GitHub-Integration-Key
+Fetching changes from the remote Git repository
+ > git rev-parse --resolve-git-dir /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/.git # timeout=10
+ > git config remote.origin.url https://github.com/Hands-On-Project-Lab/DevSecOps-CI-CD-Pipeline-Prod-Project.git # timeout=10
+Fetching upstream changes from https://github.com/Hands-On-Project-Lab/DevSecOps-CI-CD-Pipeline-Prod-Project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.53.0'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/Hands-On-Project-Lab/DevSecOps-CI-CD-Pipeline-Prod-Project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision 4adcfd4e7a8273d08e1e01e5e66ab6cfbd850f2d (origin/main)
+Commit message: "Just updated the test code"
+ > git rev-parse origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 4adcfd4e7a8273d08e1e01e5e66ab6cfbd850f2d # timeout=10
+ > git rev-list --no-walk 855ecf545cd91047a58646d08e3d3082b34d62b9 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Tool Install)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Trivy FS Scan)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+2026-08-30T23:43:26+05:30	INFO	[vuln] Vulnerability scanning is enabled
+2026-08-30T23:43:26+05:30	INFO	[secret] Secret scanning is enabled
+2026-08-30T23:43:26+05:30	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-08-30T23:43:26+05:30	INFO	[secret] Please see https://trivy.dev/docs/v0.74/guide/scanner/secret#recommendation for faster secret detection
+2026-08-30T23:43:26+05:30	INFO	Number of language-specific files	num=1
+2026-08-30T23:43:26+05:30	INFO	[pom] Detecting vulnerabilities...
+
+Report Summary
+
+┌─────────┬──────┬─────────────────┬─────────┐
+│ Target  │ Type │ Vulnerabilities │ Secrets │
+├─────────┼──────┼─────────────────┼─────────┤
+│ pom.xml │ pom  │        0        │    -    │
+└─────────┴──────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build & Sonar)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $SONAR_TOKEN
+[Pipeline] {
+[Pipeline] sh
++ mvn clean verify sonar:sonar -Dsonar.projectKey=DevSecOps-CI-CD-Pipeline-Prod-Project -Dsonar.host.url=http://172.31.37.14:9000 -Dsonar.token=**** -Dsonar.qualitygate.wait=true
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----< com.cloudwithvarjosh:DevSecOps-CI-CD-Pipeline-Prod-Project >-----
+[INFO] Building DevSecOps CI CD Pipeline Prod Project 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Deleting /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target
+[INFO] 
+[INFO] --- jacoco:0.8.11:prepare-agent (default) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] argLine set to -javaagent:/home/jenkins/.m2/repository/org/jacoco/org.jacoco.agent/0.8.11/org.jacoco.agent-0.8.11-runtime.jar=destfile=/home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/jacoco.exec
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] skip non existing resourceDirectory /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 1 source file with javac [debug target 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] skip non existing resourceDirectory /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [debug target 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.1.2:test (default-test) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.cloudwithvarjosh.AppTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.118 s -- in com.cloudwithvarjosh.AppTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jacoco:0.8.11:report (report) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Loading execution data file /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/jacoco.exec
+[INFO] Analyzed bundle 'DevSecOps CI CD Pipeline Prod Project' with 1 classes
+[INFO] 
+[INFO] --- jar:3.5.0:jar (default-jar) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Building jar: /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/DevSecOps-CI-CD-Pipeline-Prod-Project-1.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- shade:3.5.0:shade (default) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/DevSecOps-CI-CD-Pipeline-Prod-Project-1.0.0-SNAPSHOT.jar with /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/DevSecOps-CI-CD-Pipeline-Prod-Project-1.0.0-SNAPSHOT-shaded.jar
+[INFO] 
+[INFO] -----< com.cloudwithvarjosh:DevSecOps-CI-CD-Pipeline-Prod-Project >-----
+[INFO] Building DevSecOps CI CD Pipeline Prod Project 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- sonar:5.7.0.6970:sonar (default-cli) @ DevSecOps-CI-CD-Pipeline-Prod-Project ---
+[WARNING] Using an unspecified version instead of an explicit plugin version may introduce breaking analysis changes at an unwanted time. It is highly recommended to use an explicit version, e.g. 'org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970'.
+[INFO] Java 21.0.12 Ubuntu (64-bit)
+[INFO] Linux 7.0.0-1006-aws (amd64)
+[INFO] Communicating with SonarQube Community Build 25.11.0.114957
+[INFO] JRE provisioning: os[linux], arch[x86_64]
+[INFO] Starting SonarScanner Engine...
+[INFO] Java 17.0.13 Eclipse Adoptium (64-bit)
+[INFO] Load global settings
+[INFO] Load global settings (done) | time=79ms
+[INFO] Server id: 92D88F0A-AaBPUf9zN3Ux2eIQ9XkP
+[INFO] Loading required plugins
+[INFO] Load plugins index
+[INFO] Load plugins index (done) | time=11ms
+[INFO] Load/download plugins
+[INFO] Load/download plugins (done) | time=27ms
+[INFO] Process project properties
+[INFO] Process project properties (done) | time=15ms
+[INFO] Project key: DevSecOps-CI-CD-Pipeline-Prod-Project
+[INFO] Base dir: /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod
+[INFO] Working dir: /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/sonar
+[INFO] Load project settings for component key: 'DevSecOps-CI-CD-Pipeline-Prod-Project'
+[INFO] Load project settings for component key: 'DevSecOps-CI-CD-Pipeline-Prod-Project' (done) | time=12ms
+[INFO] Load quality profiles
+[INFO] Load quality profiles (done) | time=54ms
+[INFO] Auto-configuring with CI 'Jenkins'
+[INFO] Load active rules
+[INFO] Load active rules (done) | time=308ms
+[INFO] Load analysis cache
+[INFO] Load analysis cache (218 bytes) | time=21ms
+[INFO] Preprocessing files...
+[INFO] 2 languages detected in 3 preprocessed files (done) | time=100ms
+[INFO] 0 files ignored because of scm ignore settings
+[INFO] Loading plugins for detected languages
+[INFO] Load/download plugins
+[INFO] Load/download plugins (done) | time=9ms
+[INFO] Load project repositories
+[INFO] Load project repositories (done) | time=94ms
+[INFO] Indexing files...
+[INFO] Project configuration:
+[INFO] 3 files indexed (done) | time=8ms
+[INFO] Quality profile for java: Sonar way
+[INFO] Quality profile for xml: Sonar way
+[INFO] ------------- Run sensors on module DevSecOps CI CD Pipeline Prod Project
+[INFO] Load metrics repository
+[INFO] Load metrics repository (done) | time=23ms
+[INFO] Sensor JavaSensor [java]
+[INFO] Configured Java source version (sonar.java.source): 21, preview features enabled (sonar.java.enablePreview): false
+[INFO] Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.
+[INFO] Using ECJ batch to parse 1 Main java source files with batch size 50 KB.
+[INFO] Starting batch processing.
+[INFO] The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.
+[INFO] 100% analyzed
+[INFO] Batch processing: Done.
+[INFO] Did not optimize analysis for any files, performed a full analysis for all 1 files.
+[INFO] Using ECJ batch to parse 1 Test java source files with batch size 50 KB.
+[INFO] Starting batch processing.
+[INFO] 100% analyzed
+[INFO] Batch processing: Done.
+[INFO] Did not optimize analysis for any files, performed a full analysis for all 1 files.
+[INFO] No "Generated" source files to scan.
+[INFO] Sensor JavaSensor [java] (done) | time=1208ms
+[INFO] Sensor SurefireSensor [java]
+[INFO] parsing [/home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/target/surefire-reports]
+[INFO] Sensor SurefireSensor [java] (done) | time=42ms
+[INFO] Sensor XML Sensor [xml]
+[INFO] 1 source file to be analyzed
+[INFO] 1/1 source file has been analyzed
+[INFO] Sensor XML Sensor [xml] (done) | time=151ms
+[INFO] Sensor JaCoCo XML Report Importer [jacoco]
+[INFO] 'sonar.coverage.jacoco.xmlReportPaths' is not defined. Using default locations: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
+[INFO] Importing 1 report(s). Turn your logs in debug mode in order to see the exhaustive list.
+[INFO] Sensor JaCoCo XML Report Importer [jacoco] (done) | time=24ms
+[INFO] Sensor IaC Docker Sensor [iac]
+[INFO] There are no files to be analyzed for the Docker language
+[INFO] Sensor IaC Docker Sensor [iac] (done) | time=1ms
+[INFO] Sensor IaC hadolint report Sensor [iac]
+[INFO] Sensor IaC hadolint report Sensor [iac] (done) | time=2ms
+[INFO] Sensor Java Config Sensor [iac]
+[INFO] There are no files to be analyzed for the Java language
+[INFO] Sensor Java Config Sensor [iac] (done) | time=21ms
+[INFO] Sensor TextAndSecretsSensor [text]
+[INFO] Available processors: 2
+[INFO] Using 2 threads for analysis.
+[INFO] Start fetching files for the text and secrets analysis
+[INFO] Using Git CLI to retrieve untracked files
+[INFO] Retrieving language associated files and files included via "sonar.text.inclusions" that are tracked by git
+[INFO] Starting the text and secrets analysis
+[INFO] 3 source files to be analyzed for the text and secrets analysis
+[INFO] 3/3 source files have been analyzed for the text and secrets analysis
+[INFO] Sensor TextAndSecretsSensor [text] (done) | time=493ms
+[INFO] ------------- Run sensors on project
+[INFO] Sensor JavaProjectSensor [java]
+[INFO] Sensor JavaProjectSensor [java] (done) | time=4ms
+[INFO] Sensor Zero Coverage Sensor
+[INFO] Sensor Zero Coverage Sensor (done) | time=1ms
+[INFO] Sensor Java CPD Block Indexer
+[INFO] Sensor Java CPD Block Indexer (done) | time=25ms
+[INFO] ------------- Gather SCA dependencies on project
+[INFO] Dependency analysis skipped
+[INFO] SCM Publisher SCM provider for this project is: git
+[INFO] SCM Publisher 2 source files to be analyzed
+[INFO] SCM Publisher 2/2 source files have been analyzed (done) | time=151ms
+[INFO] CPD Executor Calculating CPD for 1 file
+[INFO] CPD Executor CPD calculation finished (done) | time=3ms
+[INFO] SCM revision ID '4adcfd4e7a8273d08e1e01e5e66ab6cfbd850f2d'
+[INFO] Analysis report generated in 101ms, dir size=273.7 kB
+[INFO] Analysis report compressed in 19ms, zip size=35.2 kB
+[INFO] Analysis report uploaded in 22ms
+[INFO] ------------- Check Quality Gate status
+[INFO] Waiting for the analysis report to be processed (max 300s)
+[INFO] QUALITY GATE STATUS: PASSED - View details on http://172.31.37.14:9000/dashboard?id=DevSecOps-CI-CD-Pipeline-Prod-Project
+[INFO] Analysis total time: 9.525 s
+[INFO] SonarScanner Engine completed successfully
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  15.802 s
+[INFO] Finished at: 2026-08-30T23:43:43+05:30
+[INFO] ------------------------------------------------------------------------
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (ECR Login)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ aws ecr get-login-password --region ap-south-1
++ docker login --username AWS --password-stdin 661676948454.dkr.ecr.ap-south-1.amazonaws.com
+
+WARNING! Your credentials are stored unencrypted in '/home/jenkins/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+Login Succeeded
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Image)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ export DOCKER_BUILDKIT=0
++ docker build --platform linux/amd64 -t 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:47 -t 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:latest .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            BuildKit is currently disabled; enable it by removing the DOCKER_BUILDKIT=0
+            environment-variable.
+
+Sending build context to Docker daemon  2.847GB
+
+Step 1/6 : FROM eclipse-temurin:21-jre-alpine
+ ---> 974b08960c5d
+Step 2/6 : RUN apk update && apk upgrade --no-cache
+ ---> Using cache
+ ---> 7491a4800c0c
+Step 3/6 : WORKDIR /app
+ ---> Using cache
+ ---> e2457da46390
+Step 4/6 : COPY target/DevSecOps-CI-CD-Pipeline-Prod-Project-1.0.0-SNAPSHOT.jar app.jar
+ ---> 1cffe3884136
+Step 5/6 : EXPOSE 8080
+ ---> Running in 956415ec3605
+ ---> Removed intermediate container 956415ec3605
+ ---> 9fabfbfe6b76
+Step 6/6 : ENTRYPOINT ["java", "-jar", "app.jar"]
+ ---> Running in abf62e1c14d5
+ ---> Removed intermediate container abf62e1c14d5
+ ---> 385ef8f0cef5
+Successfully built 385ef8f0cef5
+Successfully tagged 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:47
+Successfully tagged 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:latest
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Trivy Image Scan)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ mkdir -p /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/.trivycache /home/jenkins/workspace/DevSecOps-CI-CD-Pipeline-Prod/.tmp
++ trivy image --exit-code 1 --severity HIGH,CRITICAL 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:47
+2026-08-30T23:44:32+05:30	INFO	[vuln] Vulnerability scanning is enabled
+2026-08-30T23:44:32+05:30	INFO	[secret] Secret scanning is enabled
+2026-08-30T23:44:32+05:30	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-08-30T23:44:32+05:30	INFO	[secret] Please see https://trivy.dev/docs/v0.74/guide/scanner/secret#recommendation for faster secret detection
+2026-08-30T23:44:34+05:30	INFO	Detected OS	family="alpine" version="3.24.1"
+2026-08-30T23:44:34+05:30	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+2026-08-30T23:44:34+05:30	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=73
+2026-08-30T23:44:34+05:30	INFO	Number of language-specific files	num=1
+2026-08-30T23:44:34+05:30	INFO	[jar] Detecting vulnerabilities...
+
+Report Summary
+
+┌──────────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                                      Target                                      │  Type  │ Vulnerabilities │ Secrets │
+├──────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_pro- │ alpine │        0        │    -    │
+│ ject:47 (alpine 3.24.1)                                                          │        │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ app/app.jar                                                                      │  jar   │        0        │    -    │
+└──────────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push Image to ECR)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker push 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:47
+The push refers to repository [661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project]
+bda7269e79c9: Layer already exists
+25e6418062df: Layer already exists
+800e611bd7f0: Layer already exists
+b64b240d2088: Waiting
+bc6f0d2e629f: Layer already exists
+55afa1ecc21d: Layer already exists
+3c7ed5940eeb: Layer already exists
+0d265ab119d2: Layer already exists
+b64b240d2088: Pushed
+47: digest: sha256:385ef8f0cef5d5ca345a33b425a86764634a776468780fafbb249f396020113f size: 2050
+[Pipeline] sh
++ docker push 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:latest
+The push refers to repository [661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project]
+25e6418062df: Layer already exists
+800e611bd7f0: Layer already exists
+b64b240d2088: Layer already exists
+bc6f0d2e629f: Layer already exists
+3c7ed5940eeb: Layer already exists
+0d265ab119d2: Layer already exists
+55afa1ecc21d: Layer already exists
+bda7269e79c9: Layer already exists
+latest: digest: sha256:385ef8f0cef5d5ca345a33b425a86764634a776468780fafbb249f396020113f size: 2050
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Update Deployment)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ sed -i s|image:.*|image: 661676948454.dkr.ecr.ap-south-1.amazonaws.com/devsecops_ci_cd_pipeline_prod_project:47|g deploy-svc.yaml
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy to Kubernetes)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+Updated context arn:aws:eks:ap-south-1:661676948454:cluster/devsecops-ci-cd-pipeline-prod-project-eks in /home/jenkins/.kube/config
+namespace/devsecops-project configured
+deployment.apps/devsecops-ci-cd-pipeline-prod-project configured
+service/devsecops-ci-cd-pipeline-prod-project-svc unchanged
+Waiting for deployment "devsecops-ci-cd-pipeline-prod-project" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "devsecops-ci-cd-pipeline-prod-project" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "devsecops-ci-cd-pipeline-prod-project" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "devsecops-ci-cd-pipeline-prod-project" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "devsecops-ci-cd-pipeline-prod-project" rollout to finish: 1 old replicas are pending termination...
+deployment "devsecops-ci-cd-pipeline-prod-project" successfully rolled out
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
