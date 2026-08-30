@@ -62,22 +62,29 @@ pipeline {
       }
 
       stage('Deploy to Kubernetes') {
-        steps {
-          sh ``` #!/bin/bash -l
+          steps {
+              sh '''#!/bin/bash
+                  set -e
+
+                  # Update kubeconfig
                   aws eks update-kubeconfig \
                     --region ap-south-1 \
-                    --name devsecops-ci-cd-pipeline-prod-project \
-                    --kubeconfig /home/jenkins/.kube/config
+                    --name devsecops-ci-cd-pipeline-prod-project
 
-                  kubectl create ns devsecops-project
-                  kubectl apply -f deploy-svc.yaml
+                  # Create namespace if it does not exist
+                  kubectl create namespace devsecops-project --dry-run=client -o yaml | kubectl apply -f -
 
-                  kubectl rollout status -n devsecops-project deployment/devsecops-demo --timeout=60s || {
-                    kubectl rollout undo -n devsecops-project deployment/devsecops-demo || true
+                  # Deploy application resources
+                  kubectl apply -f deploy-svc.yaml -n devsecops-project
+
+                  # Rollout status check with automated rollback
+                  kubectl rollout status deployment/devsecops-demo -n devsecops-project --timeout=60s || {
+                    echo "Deployment failed! Initiating rollback..."
+                    kubectl rollout undo deployment/devsecops-demo -n devsecops-project
                     exit 1
                   }
-              ```
-        }
+              '''
+          }
       }
     }
   }
